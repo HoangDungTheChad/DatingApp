@@ -31,6 +31,10 @@ app.UseCors(policy =>
           .WithOrigins("http://localhost:4200")
 ); 
 
+app.UseAuthentication(); 
+
+app.UseAuthorization(); 
+
 app.MapControllers(); 
 
 app.Run();
