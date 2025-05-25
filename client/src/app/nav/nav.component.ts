@@ -21,7 +21,10 @@ import { TitleCasePipe } from '@angular/common';
   styleUrl: './nav.component.css',
 })
 export class NavComponent implements OnInit {
-  model: any = {};
+  model: any = {
+    username: '',  
+    password: ''
+  };
   currentUser$: Observable<User>;
   userLoaded = false;
 
@@ -39,11 +42,7 @@ export class NavComponent implements OnInit {
     this.accountService.login(this.model).subscribe({
       next: (res) => {
         this.router.navigateByUrl('/members');
-      },
-      error: (error) => {
-        this.toastr.error(error.error); 
-        console.log(error); 
-      },
+      }
     });
   }
 
