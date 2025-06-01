@@ -16,19 +16,15 @@ export const routes: Routes = [
     runGuardsAndResolvers: 'always',
     canActivate: [authGuard],
     children: [
-      {
-        path: 'members',
-        component: MemberListComponent,
-        canActivate: [authGuard],
-      },
-      { path: 'members/:id', component: MemberDetailComponent },
+      { path: 'members', component: MemberListComponent },
+      { path: 'members/:username', component: MemberDetailComponent },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
     ],
   },
-  {path: 'not-found', component: NotFoundComponent}, 
-  {path: 'server-error', component: ServerErrorComponent}, 
-  {path: 'errors', component: TestErrorComponent},
+  { path: 'not-found', component: NotFoundComponent },
+  { path: 'server-error', component: ServerErrorComponent },
+  { path: 'errors', component: TestErrorComponent },
   // wildcard route when no other route is matched
   { path: '**', component: NotFoundComponent},
 ];

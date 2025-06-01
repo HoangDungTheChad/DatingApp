@@ -18,8 +18,6 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 
 var app = builder.Build();
-
-
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -29,8 +27,25 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localh
 
 // the order of these middleware is important 
 app.UseAuthentication();  
-app.UseAuthorization(); 
+app.UseAuthorization();
 
-app.MapControllers(); 
+app.MapControllers();
+
+// ==== SEED DATA HERE ==== // 
+// Create a mini-container to grab scoped services 
+using var scope = app.Services.CreateScope(); 
+var services = scope.ServiceProvider;
+
+try
+{
+  var context = services.GetRequiredService<DataContext>();
+  await context.Database.MigrateAsync();
+  await Seed.SeedUsers(context);
+}
+catch (Exception ex)
+{
+  var logger = services.GetRequiredService<ILogger<Program>>();
+  logger.LogError(ex, "An error occured whle seeding the database"); 
+}
 
 app.Run();
