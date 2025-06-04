@@ -1,30 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { Member } from '../../_models/member';
 import { MembersService } from '../../_service/members.service';
-import { NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { MemberCardComponent } from '../member-card/member-card.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-member-list',
-  imports: [NgFor, NgIf, MemberCardComponent],
+  imports: [NgFor, NgIf, MemberCardComponent, AsyncPipe],
   templateUrl: './member-list.component.html',
   styleUrl: './member-list.component.css'
 })
 export class MemberListComponent implements OnInit {
-  members: Member[] = []; 
+  members$: Observable<Member[]>; 
   
   constructor(private memberService: MembersService)
   {}
   
   ngOnInit(): void {
-    this.loadMembers()
-  }
-
-  loadMembers() {
-    this.memberService.getMembers().subscribe({
-      next: members => {
-        this.members = members; 
-      }
-    })
+    this.members$ = this.memberService.getMembers(); 
   }
 }

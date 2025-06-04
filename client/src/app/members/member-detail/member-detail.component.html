@@ -43,7 +43,9 @@
         <p>{{member.interests}}</p>
       </tab>
       <tab heading="Photo">
-        <gallery [items]="images" thumbPosition="left"></gallery>
+        <div class="container" style="width: 700px; height: 550px; margin-top: 10px;">
+          <gallery [items]="images" thumbPosition="left"></gallery>
+        </div>
       </tab>
       <tab heading="Messages">
         <p>Messages will go here</p>

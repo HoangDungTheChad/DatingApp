@@ -1,19 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { error } from 'console';
-import { NgFor, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { NavComponent } from './nav/nav.component';
-import { User } from './_models/user';
 import { AccountService } from './_service/account.service';
 import { PLATFORM_ID } from '@angular/core';
+import { User } from './_models/user';
 import { isPlatformBrowser } from '@angular/common';
-import { HomeComponent } from './home/home.component';
-import { take } from 'rxjs';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-root',
-  imports: [NavComponent, HomeComponent, RouterOutlet, NgFor, NgIf],
+  imports: [NavComponent, RouterOutlet, NgIf, NgxSpinnerModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -22,12 +19,10 @@ export class AppComponent implements OnInit {
   title = 'The Dating App';
   userLoaded = false;
 
-  constructor(private accountService: AccountService) {
-    
-  }
+  constructor(private accountService: AccountService) {}
 
   ngOnInit(): void {
-    // this.setCurrentUser();
+    this.setCurrentUser();
 
     // waiting for the first emission then allow rendering
     this.accountService.currentUser$.subscribe({
@@ -37,15 +32,14 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // setCurrentUser() {
-  //   if (isPlatformBrowser(this.platformId)) {
-  //     const userJson = localStorage.getItem('user');
-  //     if (userJson) {
-  //       const user: User = JSON.parse(userJson);
-  //       this.accountService.setCurrentUser(user);
-  //     } else {
-  //       this.accountService.setCurrentUser(null); // or undefined
-  //     }
-  //   }
-  // }
+  setCurrentUser() {
+    if (isPlatformBrowser(this.platformId)) {
+      const userString = localStorage.getItem('user');
+      if (!userString) {
+        this.accountService.setCurrentUser(null);
+      }
+      const user: User = JSON.parse(userString);
+      this.accountService.setCurrentUser(user);
+    }
+  }
 }

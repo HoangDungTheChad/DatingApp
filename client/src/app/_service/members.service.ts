@@ -3,10 +3,10 @@ import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Member } from '../_models/member';
 import { isPlatformBrowser } from '@angular/common';
-import { UntypedFormBuilder } from '@angular/forms';
+import { map, of } from 'rxjs';
 
 let httpOptions = {
-  headers: undefined
+  headers: undefined,
 };
 
 @Injectable({
@@ -14,21 +14,43 @@ let httpOptions = {
 })
 export class MembersService {
   baseUrl = environment.apiUrl;
-  private platformId = inject(PLATFORM_ID)
-  isBrowser: boolean = false; 
+  private platformId = inject(PLATFORM_ID);
+  isBrowser: boolean = false;
+  members: Member[] = [];
 
   constructor(private http: HttpClient) {
     if (isPlatformBrowser(this.platformId)) {
       httpOptions.headers = new HttpHeaders({
-        Authorization: "Bearer " + JSON.parse(localStorage.getItem("user"))?.token
-      })
+        Authorization:
+          'Bearer ' + JSON.parse(localStorage.getItem('user'))?.token,
+      });
     }
   }
 
   getMembers() {
-    return this.http.get<Member[]>(this.baseUrl + 'users', httpOptions);
+    if (this.members.length > 0) return of(this.members);
+    return this.http.get<Member[]>(this.baseUrl + 'users', httpOptions).pipe(
+      map((members) => {
+        this.members = members;
+        return members;
+      })
+    );
   }
   getMember(username: string) {
-    return this.http.get<Member>(this.baseUrl + `users/${username}`, httpOptions); 
+    const member = this.members.find((x) => x.userName === username);
+    if (member !== undefined) return of(member);
+    return this.http.get<Member>(
+      this.baseUrl + `users/${username}`,
+      httpOptions
+    );
+  }
+
+  updateMember(member: Member) {
+    return this.http.put(this.baseUrl + 'users', member).pipe(
+      map(() => {
+        const index = this.members.indexOf(member);  
+        this.members[index] = member; 
+      })
+    );
   }
 }
