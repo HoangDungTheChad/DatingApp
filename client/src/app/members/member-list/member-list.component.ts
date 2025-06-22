@@ -7,17 +7,17 @@ import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-member-list',
+  standalone: true,
   imports: [NgFor, NgIf, MemberCardComponent, AsyncPipe],
   templateUrl: './member-list.component.html',
-  styleUrl: './member-list.component.css'
+  styleUrl: './member-list.component.css',
 })
 export class MemberListComponent implements OnInit {
-  members$: Observable<Member[]>; 
-  
-  constructor(private memberService: MembersService)
-  {}
-  
+  members$: Observable<Member[]>;
+
+  constructor(private memberService: MembersService) {}
+
   ngOnInit(): void {
-    this.members$ = this.memberService.getMembers(); 
+    this.members$ = this.memberService.getMembers();
   }
 }

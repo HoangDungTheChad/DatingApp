@@ -1,0 +1,73 @@
+<div class="row">
+  <div class="col-2" *ngFor="let photo of member.photos">
+    <img
+      src="{{ photo.url }}"
+      alt="{{ photo.url }}"
+      class="img-thumbnail p-1"
+    />
+    <div class="text-center">
+      <button 
+        class="btn btn-sm me-2"
+        (click)="setMainPhoto(photo)" 
+        [ngClass]='photo.isMain ? "btn-success active" : "btn-outline-success"'
+      >Main</button>
+      <button 
+        class="btn btn-sm btn-danger"
+        [disabled]="photo.isMain"
+        (click)="deletePhoto(photo.id)"
+      ><i class="fa fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <h4 class="mb-3">Upload Photos</h4>
+
+  <div
+    class="border p-4 rounded text-center"
+    [class.bg-light]="!isDragging"
+    [class.border-primary]="isDragging"
+    (drop)="onDrop($event)"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    style="cursor: pointer;"
+  >
+    <p class="mb-2">Drag & Drop images here or click to select</p>
+    <input type="file" multiple accept="image/*" (change)="handleFileInput($event)" class="form-control" />
+  </div>
+
+  <!-- Uploaded Files Table -->
+  <div class="table-responsive mt-4" *ngIf="selectedFiles.length > 0">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>File Name</th>
+          <th>Size (KB)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of selectedFiles; let i = index">
+          <td>{{ file.name }}</td>
+          <td>{{ (file.size / 1024) | number: '1.0-2' }}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" (click)="removeFile(i)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="d-flex justify-content-start mt-3">
+      <button class="btn btn-primary me-2" [disabled]="selectedFiles.length === 0" (click)="onUpload()">
+        Upload {{ selectedFiles.length }} Photo{{ selectedFiles.length > 1 ? 's' : '' }}
+      </button>
+      <button class="btn btn-secondary" (click)="removeAllFiles()">Remove All</button>
+    </div>
+  </div> 
+
+</div>
+
+

@@ -19,7 +19,9 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([errorInterceptor, jwtInterceptor, loadingInterceptor])),
+    provideHttpClient(
+      withInterceptors([errorInterceptor, jwtInterceptor, loadingInterceptor])
+    ),
     provideAnimations(),
     provideToastr({
       positionClass: 'toast-bottom-right',
@@ -34,3 +36,4 @@ export const appConfig: ApplicationConfig = {
     },
   ],
 };
+

@@ -8,6 +8,7 @@ import { GalleryModule, GalleryItem, ImageItem } from 'ng-gallery';
 
 @Component({
   selector: 'app-member-detail',
+  standalone: true,
   imports: [NgIf, TabsModule, GalleryModule],
   templateUrl: './member-detail.component.html',
   styleUrl: './member-detail.component.css',
@@ -38,7 +39,7 @@ export class MemberDetailComponent implements OnInit {
       .getMember(this.route.snapshot.paramMap.get('username'))
       .subscribe((member) => {
         this.member = member;
-        this.getImages(); 
+        this.getImages();
       });
   }
 }

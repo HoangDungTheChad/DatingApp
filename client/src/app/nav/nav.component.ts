@@ -13,6 +13,7 @@ import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-nav',
+  standalone: true, 
   imports: [
     FormsModule, NgIf, BsDropdownModule, 
     AsyncPipe, RouterLink, TitleCasePipe

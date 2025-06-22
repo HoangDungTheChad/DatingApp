@@ -22,7 +22,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               } 
               throw modelStateErrors.flat(); 
             } else {
-              toastr.error(error.statusText, "Bad request, bro"); 
+              toastr.error(error.statusText, "Bad request"); 
             }
             break; 
           case 401:  

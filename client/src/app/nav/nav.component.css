@@ -1,3 +1,11 @@
 .dropdown-toggle, .dropdown-menu {
   cursor: pointer; 
 }
+
+/* Style the main photo on the nav bar */
+.main-photo {
+  max-height: 50px;  
+  border: 2px solid #fff;  
+  display: inline-block; 
+  border-radius: 50%; 
+}
