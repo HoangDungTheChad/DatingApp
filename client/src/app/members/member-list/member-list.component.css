@@ -1,0 +1,9 @@
+#filter-form .form-group {
+  display: flex;
+  align-items: center;
+  gap: 10; 
+}
+
+#filter-form .form-group .form-control {
+  display: inline-block; 
+}

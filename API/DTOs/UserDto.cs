@@ -11,5 +11,7 @@ namespace API.DTOs
     public string Token { get; set; }
     public string PhotoUrl { get; set; }
     public string KnownAs { get; set; }
+    // Save us an API call to see what the gender is 
+    public string Gender { get; set; }
   }
 }
