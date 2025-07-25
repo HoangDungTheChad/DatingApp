@@ -13,6 +13,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error) {
         switch (error.status) {
           case 400:
+            // we have 3 types of 400 error
             if (error.error.errors) {
               const modelStateErrors = [];
               for (const key in error.error.errors) {
@@ -21,8 +22,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                 }
               } 
               throw modelStateErrors.flat(); 
-            } else {
+            } else if (typeof(error.error) == "object") {
               toastr.error(error.statusText, "Bad request"); 
+            } else {
+              // in case the error is a string not an object 
+              toastr.error(error.error, error.status)
             }
             break; 
           case 401:  

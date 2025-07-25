@@ -10,6 +10,7 @@ import { AsyncPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { TitleCasePipe } from '@angular/common';
+import { MembersService } from '../_service/members.service';
 
 @Component({
   selector: 'app-nav',
@@ -32,7 +33,8 @@ export class NavComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,  
+    private memberService: MembersService 
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +44,8 @@ export class NavComponent implements OnInit {
   login() {
     this.accountService.login(this.model).subscribe({
       next: (res) => {
+        // reset the filter 
+        this.memberService.initializeUserParams(); 
         this.router.navigateByUrl('/members');
       }
     });

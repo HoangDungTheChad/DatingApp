@@ -48,14 +48,15 @@ export class TestErrorComponent {
   }
 
   get401Error() {
-    this.http.get(this.baseUrl + 'buggy/auth').subscribe({
+    // the response is raw text but angular expects a json response so... 
+    this.http.get(this.baseUrl + 'buggy/auth', {responseType: 'text'}).subscribe({
       next: (res) => {
         console.log(res);
       },
       error: (err) => {
         console.log(err);
       },
-    });
+    }); 
   }
 
   get400ValidationError() {

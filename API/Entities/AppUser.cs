@@ -22,10 +22,14 @@ namespace API.Entities
     public string City { get; set; }
     public string Country { get; set; }
     public ICollection<Photo> Photos { get; set; }
+    // All users has liked the currently logged in user  
+    public ICollection<UserLike> LikedByUsers { get; set; }
+    // All users has been liked by currently logged in user 
+    public ICollection<UserLike> LikedUsers { get; set; }
 
     // The method name is important, because AutoMapper'll use
     // that to populate the value for the MemberDto's Age property.
-    
+
     // public int GetAge()
     // {
     //   DateTime today = DateTime.Today;

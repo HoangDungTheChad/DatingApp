@@ -39,7 +39,15 @@ export class MemberListComponent implements OnInit {
 
   constructor(
     private memberService: MembersService,
+    private accountService: AccountService
   ) {
+    
+    if (!this.memberService.getUserParams()) {
+      // user already logged in but refresh the page,  
+      // so the user params is lost, reset  
+      this.memberService.initializeUserParams(); 
+    }
+    
     this.userParams = this.memberService.getUserParams(); 
   }
 
