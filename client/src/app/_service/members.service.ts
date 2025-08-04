@@ -8,6 +8,7 @@ import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
 import { AccountService } from './account.service';
 import { User } from '../_models/user';
+import { getPaginatedResult, getPaginationParams } from './paginationHelper';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +58,7 @@ export class MembersService {
       return of(response);
     }
 
-    let params = this.getPaginationHeaders(
+    let params = getPaginationParams(
       userParams.pageNumber,
       userParams.pageSize
     );
@@ -67,9 +68,10 @@ export class MembersService {
     params = params.append('gender', userParams.gender);
     params = params.append('orderBy', userParams.orderBy);
 
-    return this.getPaginatedResult<Member[]>(
+    return getPaginatedResult<Member[]>(
       this.baseUrl + 'users',
-      params
+      params,  
+      this.http
     ).pipe(
       map((response) => {
         this.memberCache.set(Object.values(userParams).join('-'), response);
@@ -112,33 +114,8 @@ export class MembersService {
   }
 
   getLikes(predicate, pageNumber, pageSize) {
-    let params = this.getPaginationHeaders(pageNumber, pageSize);  
+    let params = getPaginationParams(pageNumber, pageSize);  
     params = params.append("predicate", predicate);  
-    return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes/', params); 
-  }
-
-  private getPaginatedResult<T>(url, params: HttpParams) {
-    const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
-
-    return this.http.get<T>(url, { observe: 'response', params }).pipe(
-      map((response) => {
-        paginatedResult.result = response.body;
-        if (response.headers.get('Pagination') !== null) {
-          paginatedResult.pagination = JSON.parse(
-            response.headers.get('Pagination')
-          );
-        }
-        return paginatedResult;
-      })
-    );
-  }
-
-  private getPaginationHeaders(pageNumber: number, pageSize: number) {
-    let params = new HttpParams();
-    // Adding query strings
-    params = params.append('pageNumber', pageNumber.toString());
-    params = params.append('pageSize', pageSize.toString());
-
-    return params;
+    return getPaginatedResult<Member[]>(this.baseUrl + 'likes/', params, this.http); 
   }
 }

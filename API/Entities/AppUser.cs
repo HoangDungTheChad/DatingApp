@@ -27,6 +27,9 @@ namespace API.Entities
     // All users has been liked by currently logged in user 
     public ICollection<UserLike> LikedUsers { get; set; }
 
+    public ICollection<Message> MessagesSent { get; set; }
+    public ICollection<Message> MessagesReceived { get; set; }
+
     // The method name is important, because AutoMapper'll use
     // that to populate the value for the MemberDto's Age property.
 

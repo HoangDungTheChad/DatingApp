@@ -18,7 +18,8 @@ namespace API.Extensions
       services.AddScoped<ITokenService, TokenService>();
       services.AddScoped<LogUserActivity>(); 
       services.AddScoped<IUserRepository, UserRepository>();
-      services.AddScoped<ILikesRepository, LikesRepository>(); 
+      services.AddScoped<ILikesRepository, LikesRepository>();
+      services.AddScoped<IMessageRepository, MessageRepository>(); 
       services.AddScoped<IPhotoService, PhotoService>(); 
       services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly); 
       services.AddDbContext<DataContext>(options =>
@@ -28,9 +29,5 @@ namespace API.Extensions
 
       return services;
     }
-  }
-
-  internal interface ILikeRepository
-  {
   }
 }

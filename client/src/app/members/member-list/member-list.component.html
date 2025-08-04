@@ -86,7 +86,7 @@
 <div class="d-flex justify-content-center" *ngIf="pagination">
   <pagination
     [boundaryLinks]="true"
-    [totalItems]="pagination.totalItems"
+  [totalItems]="pagination.totalItems"
     [itemsPerPage]="pagination.itemsPerPage"
     [(ngModel)]="pagination.currentPage"
     (pageChanged)="pageChanged($event)"
