@@ -8,7 +8,7 @@ import {
 
 @Component({
   selector: 'app-date-input',
-  imports: [BsDatepickerModule, NgIf, DatePipe],
+  imports: [BsDatepickerModule, NgIf],
   templateUrl: './date-input.component.html',
   styleUrl: './date-input.component.css',
   standalone: true,

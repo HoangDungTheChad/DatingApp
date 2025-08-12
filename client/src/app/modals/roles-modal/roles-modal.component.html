@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h4 class="modal-title pull-left">Edit roles for {{user.username}}</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef?.hide()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #roleForm="ngForm" id="rolesForm">
+    <div class="form-check" *ngFor="let role of roles">
+      <!-- the disabled attr is to prevent admin to uncheck themself to be admin -->
+       <label class="form-check-label">
+        <input 
+          type="checkbox"
+          class="form-check-input"
+          value="role.name"  
+          [(ngModel)]="role.checked"
+          name ="role_{{role.name}}"
+          [disabled]="role.name === 'Admin' && user.username === 'admin'"
+        > 
+          {{role.name}}
+       </label>
+
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+  <button class="btn btn-default" (click)="updateRoles()">Submit</button>
+</div>

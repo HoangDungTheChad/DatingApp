@@ -6,26 +6,66 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
   public class Seed
   {
-    public static async Task SeedUsers(DataContext context)
+    public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
-      if (await context.Users.AnyAsync()) return;
+
+      if (await userManager.Users.AnyAsync()) return;
+
       var userData = await System.IO.File.ReadAllTextAsync("Data/UserSeedData.json");
       var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
+      if (users == null) return;
+
+      var roles = new List<AppRole>
+      {
+        new AppRole {Name = "Member"},
+        new AppRole {Name = "Moderator"},
+        new AppRole {Name = "Admin"},
+      };
+
+      foreach (var role in roles)
+      {
+        await roleManager.CreateAsync(role);
+      }
+
       foreach (var user in users)
       {
         user.UserName = user.UserName.ToLower();
-        using var hmac = new HMACSHA512();
-        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password"));
-        user.PasswordSalt = hmac.Key;
+        // using var hmac = new HMACSHA512();
+        // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password"));
+        // user.PasswordSalt = hmac.Key;
+        var result = await userManager.CreateAsync(user, "password");
+        if (!result.Succeeded)
+        {
+          Console.WriteLine($"❌ Failed to create user: {user.UserName}");
+          foreach (var error in result.Errors)
+          {
+            Console.WriteLine($"   - {error.Code}: {error.Description}");
+          }
+        }
+        else
+        {
+          Console.WriteLine($"✅ User created: {user.UserName}");
+        }
+        await userManager.AddToRoleAsync(user, "Member");
       }
-      context.Users.AddRange(users);  
-      await context.SaveChangesAsync(); 
+
+      // Create admin  
+      var admin = new AppUser
+      {
+        UserName = "admin"
+      };
+
+      await userManager.CreateAsync(admin, "password");
+      await userManager.AddToRolesAsync(admin, ["admin", "Moderator"]); 
+
+      // await context.SaveChangesAsync(); --> the userManager takes care of saving the changes 
     }
   }
 }

@@ -15,7 +15,6 @@ import { MessageService } from '../../_service/message.service';
   selector: 'app-member-detail',
   standalone: true,
   imports: [
-    NgIf,
     TabsModule,
     GalleryModule,
     DatePipe,

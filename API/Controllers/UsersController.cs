@@ -25,7 +25,7 @@ public class UsersController : BaseApiController
     this._userRepository = userRepository;
     this._mapper = mapper;
   }
-
+   
   [HttpGet]
   // this API should be smart enough to catch our query string params, but fuck no! 
   public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)

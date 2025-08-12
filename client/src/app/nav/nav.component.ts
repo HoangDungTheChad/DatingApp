@@ -11,13 +11,15 @@ import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { TitleCasePipe } from '@angular/common';
 import { MembersService } from '../_service/members.service';
+import { HasRoleDirective } from '../_directives/has-role.directive';
 
 @Component({
   selector: 'app-nav',
   standalone: true, 
   imports: [
     FormsModule, NgIf, BsDropdownModule, 
-    AsyncPipe, RouterLink, TitleCasePipe
+    AsyncPipe, RouterLink, TitleCasePipe, 
+    HasRoleDirective
   ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.css',

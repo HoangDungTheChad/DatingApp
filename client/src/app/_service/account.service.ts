@@ -19,7 +19,7 @@ export class AccountService {
       map((res: User) => {
         const user = res;
         if (user) {
-          this.setCurrentUser(user); 
+          this.setCurrentUser(user);
         }
       })
     );
@@ -28,12 +28,19 @@ export class AccountService {
   register(model: any) {
     return this.http.post(this.baseUrl + 'account/register', model).pipe(
       map((user: User) => {
-        this.setCurrentUser(user); 
+        this.setCurrentUser(user);
       })
     );
   }
 
   setCurrentUser(user: User) {
+    if (user !== null) {
+      user.roles = [];
+      // note: the return role would be an array if the user take on multiple roles
+      const roles = this.getDecodedToken(user.token).role;
+      Array.isArray(roles) ? (user.roles = roles) : user.roles.push(roles);
+    }
+
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
   }
@@ -41,5 +48,10 @@ export class AccountService {
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+  }
+
+  getDecodedToken(token) {
+    // decode the payload (the only part of JWT that we're interested in)
+    return JSON.parse(atob(token.split('.')[1]));
   }
 }

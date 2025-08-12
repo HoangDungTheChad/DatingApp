@@ -19,7 +19,6 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
     NgFor,
     NgIf,
     MemberCardComponent,
-    AsyncPipe,
     PaginationModule,
     FormsModule, 
     ButtonsModule 

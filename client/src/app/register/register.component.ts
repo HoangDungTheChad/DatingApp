@@ -24,7 +24,6 @@ import { Router } from '@angular/router';
   imports: [
     NgFor,
     ReactiveFormsModule,
-    JsonPipe,
     NgIf,
     TextInputComponent, 
     DateInputComponent

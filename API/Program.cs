@@ -1,10 +1,12 @@
 using System.Text;
 using API.Data;
+using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,8 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddControllers(); 
-builder.Services.AddIdentityServices(builder.Configuration); 
+builder.Services.AddControllers();
+builder.Services.AddIdentityServices(builder.Configuration);
 
 
 var app = builder.Build();
@@ -23,29 +25,36 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200")); 
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
 // the order of these middleware is important 
-app.UseAuthentication();  
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 // ==== SEED DATA HERE ==== // 
 // Create a mini-container to grab scoped services 
-using var scope = app.Services.CreateScope(); 
+using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
 try
 {
   var context = services.GetRequiredService<DataContext>();
+  var userManager = services.GetRequiredService<UserManager<AppUser>>();
+  var roleManager = services.GetRequiredService<RoleManager<AppRole>>(); 
   await context.Database.MigrateAsync();
-  await Seed.SeedUsers(context);
+
+  // Console.WriteLine("WAITING FOR DEBUGGER TO ATTACH...");
+  // while (!System.Diagnostics.Debugger.IsAttached) { }  // 🛑 wait for debugger
+  // Console.WriteLine("DEBUGGER ATTACHED ✅");
+
+  await Seed.SeedUsers(userManager, roleManager);
 }
 catch (Exception ex)
 {
   var logger = services.GetRequiredService<ILogger<Program>>();
-  logger.LogError(ex, "An error occured whle seeding the database"); 
+  logger.LogError(ex, "An error occured while seeding the database");
 }
 
 app.Run();

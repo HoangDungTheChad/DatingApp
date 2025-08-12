@@ -6,7 +6,7 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { errorInterceptor } from './_interceptors/error.interceptor';
@@ -21,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(
       withInterceptors([errorInterceptor, jwtInterceptor, loadingInterceptor])
+      // withFetch() --> this is recommended but it messes with error interceptor, fuck
     ),
     provideAnimations(),
     provideToastr({
