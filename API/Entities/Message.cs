@@ -16,7 +16,7 @@ namespace API.Entities
     public AppUser Recipient { get; set; }
     public string Content { get; set; }
     // Can be null if the message has not been read 
-    public DateTime DateSent { get; set; } = DateTime.Now;
+    public DateTime DateSent { get; set; } = DateTime.UtcNow;
     public DateTime? DateRead { get; set; }
     // Delete the msg from sender's view, not from recipient's 
     public bool SenderDeleted { get; set; }

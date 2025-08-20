@@ -5,6 +5,7 @@ using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddControllers();
+builder.Services.AddCors();
 builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -25,13 +28,21 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+app.UseCors(x => x.AllowAnyHeader()
+  .AllowAnyMethod() 
+  .AllowCredentials() // Not sure if this is neccessary for the SignalR authentication 
+  .WithOrigins("https://localhost:4200"));
 
 // the order of these middleware is important 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// map your controllers (REST API)
 app.MapControllers();
+
+// map your Signal Hub (real-time endpoints) 
+app.MapHub<PresenceHub>("/hubs/presence");
+app.MapHub<MessageHub>("/hubs/message"); 
 
 // ==== SEED DATA HERE ==== // 
 // Create a mini-container to grab scoped services 
@@ -42,7 +53,7 @@ try
 {
   var context = services.GetRequiredService<DataContext>();
   var userManager = services.GetRequiredService<UserManager<AppUser>>();
-  var roleManager = services.GetRequiredService<RoleManager<AppRole>>(); 
+  var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
   await context.Database.MigrateAsync();
 
   // Console.WriteLine("WAITING FOR DEBUGGER TO ATTACH...");

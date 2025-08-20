@@ -7,6 +7,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { User } from './_models/user';
 import { isPlatformBrowser } from '@angular/common';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { PresenceService } from './_service/presence.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,7 @@ export class AppComponent implements OnInit {
   title = 'The Dating App';
   userLoaded = false;
 
-  constructor(private accountService: AccountService) {}
+  constructor(private accountService: AccountService, private presence: PresenceService) {}
 
   ngOnInit(): void {
     this.setCurrentUser();
@@ -34,13 +35,15 @@ export class AppComponent implements OnInit {
   }
 
   setCurrentUser() {
-    if (isPlatformBrowser(this.platformId)) {
-      const userString = localStorage.getItem('user');
-      if (!userString) {
-        this.accountService.setCurrentUser(null);
-      }
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+      this.accountService.setCurrentUser(null);
+    } else {
       const user: User = JSON.parse(userString);
       this.accountService.setCurrentUser(user);
+      this.presence.createHubConnection(user); // create the hub connnection use is set
     }
   }
 }

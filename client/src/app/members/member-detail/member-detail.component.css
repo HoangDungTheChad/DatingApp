@@ -13,3 +13,13 @@
   background-color: #fff; 
   border-top: none; 
 }
+
+@keyframes blink-dot {
+  0%   { opacity: 0.3; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.is-online {
+  animation: blink-dot 1.2s ease-in-out infinite;
+}

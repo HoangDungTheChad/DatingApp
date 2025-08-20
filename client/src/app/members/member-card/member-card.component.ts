@@ -3,11 +3,13 @@ import { Member } from '../../_models/member';
 import { RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MembersService } from '../../_service/members.service';
+import { PresenceService } from '../../_service/presence.service';
+import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-member-card',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AsyncPipe, NgIf],
   templateUrl: './member-card.component.html',
   styleUrl: './member-card.component.css',
 })
@@ -16,7 +18,8 @@ export class MemberCardComponent implements OnInit {
 
   constructor(
     private memberService: MembersService,
-    private toastr: ToastrService
+    private toastr: ToastrService, 
+    public presence: PresenceService 
   ) {}
 
   ngOnInit(): void {} 

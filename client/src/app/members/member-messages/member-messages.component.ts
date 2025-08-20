@@ -1,12 +1,12 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Message } from '../../_models/message';
 import { MessageService } from '../../_service/message.service';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-member-messages',
-  imports: [NgFor, NgIf, NgFor, DatePipe, FormsModule],
+  imports: [NgFor, NgIf, NgFor, DatePipe, FormsModule, AsyncPipe],
   templateUrl: './member-messages.component.html',
   styleUrl: './member-messages.component.css',
 })
@@ -17,14 +17,12 @@ export class MemberMessagesComponent implements OnInit {
   @Input() messages: Message[]; 
   messageContent: string; 
 
-  constructor(private messageService: MessageService) {}
+  constructor(public messageService: MessageService) {}
 
   ngOnInit(): void {}
 
   sendMessage() {
-    console.log("this is send message method")
-    this.messageService.sendMessage(this.username, this.messageContent).subscribe(message => {
-      this.messages.push(message); 
+    this.messageService.sendMessage(this.username, this.messageContent).then(() => {
       this.messageForm.reset(); 
     })
   }
