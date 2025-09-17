@@ -9,6 +9,7 @@ using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace API.Data
 {
@@ -48,7 +49,7 @@ namespace API.Data
       return await _context.Groups
         .Include(g => g.Connections)
         .Where(g => g.Connections.Any(x => x.ConnectionId == connectionId))
-        .FirstOrDefaultAsync();  
+        .FirstOrDefaultAsync();
     }
 
     public async Task<Message> GetMessage(int id)
@@ -69,17 +70,18 @@ namespace API.Data
     public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
     {
       var query = _context.Messages
-        .OrderByDescending(m => m.DateSent) // other them by latest sent date 
+        .OrderByDescending(m => m.DateSent) // order them by latest sent date 
         .AsQueryable();
 
       query = messageParams.Container switch
       {
-        "Inbox" => query.Where(m => m.Recipient.UserName == messageParams.Username && m.RecipientDeleted == false),
-        "Outbox" => query.Where(m => m.Sender.UserName == messageParams.Username && m.SenderDeleted == false),
+        "Inbox" => query.Where(m => m.RecipientUsername == messageParams.Username && m.RecipientDeleted == false),
+        "Outbox" => query.Where(m => m.SenderUsername == messageParams.Username && m.SenderDeleted == false),
         // Default case  
-        _ => query.Where(m => m.Recipient.UserName == messageParams.Username && m.RecipientDeleted == false && m.DateRead == null)
+        _ => query.Where(m => m.RecipientUsername == messageParams.Username && m.RecipientDeleted == false && m.DateRead == null)
       };
 
+      // this is a query, not messages yet, be careful with the name 
       var messages = query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider);
 
       return await PagedList<MessageDto>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
@@ -107,7 +109,9 @@ namespace API.Data
         {
           msg.DateRead = DateTime.UtcNow;
         }
-        await _context.SaveChangesAsync();
+
+        // it's uow's job to save changes, check out MessageHub!
+        // await _context.SaveChangesAsync();
       }
       // Map to DTOs
       var messageDtos = _mapper.Map<IEnumerable<MessageDto>>(messages);
@@ -118,18 +122,14 @@ namespace API.Data
       //   dto.DateRead = DateTime.SpecifyKind(dto.DateRead.Value, DateTimeKind.Utc);
       // }
 
-      return messageDtos;
+      // return messageDtos;
       // return _mapper.Map<IEnumerable<MessageDto>>(messages); 
+      return messageDtos; 
     }
 
     public void RemoveConnection(Connection connection)
     {
       _context.Connections.Remove(connection);
-    }
-
-    public async Task<bool> SaveAllAsync()
-    {
-      return await _context.SaveChangesAsync() > 0; // so we return a boolean 
     }
   }
 }

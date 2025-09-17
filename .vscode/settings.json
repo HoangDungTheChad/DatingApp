@@ -1,1 +1,5 @@
-{}
+{
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.enableEditorConfigSupport": true,
+  "omnisharp.analyzeOpenDocumentsOnly": false
+}

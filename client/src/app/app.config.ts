@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -13,6 +13,7 @@ import { errorInterceptor } from './_interceptors/error.interceptor';
 import { jwtInterceptor } from './_interceptors/jwt.interceptor';
 import { GALLERY_CONFIG, GalleryConfig } from 'ng-gallery';
 import { loadingInterceptor } from './_interceptors/loading.interceptor';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,6 +36,9 @@ export const appConfig: ApplicationConfig = {
         imageSize: 'cover',
       } as GalleryConfig,
     },
+    importProvidersFrom(
+      ModalModule.forRoot()
+    )
   ],
 };
 

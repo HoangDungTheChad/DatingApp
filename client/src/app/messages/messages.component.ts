@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { RouterLink } from '@angular/router';
 import { PaginationComponent } from 'ngx-bootstrap/pagination';
+import { ConfirmService } from '../_service/confirm.service';
 
 @Component({
   standalone: true, 
@@ -23,7 +24,7 @@ export class MessagesComponent implements OnInit{
   pageSize: number = 5; 
   loading: boolean = false;  
 
-  constructor(private messageService: MessageService) {}
+  constructor(private messageService: MessageService, private confirmService: ConfirmService) {}
 
   ngOnInit(): void {
     this.loadMessages(); 
@@ -41,10 +42,15 @@ export class MessagesComponent implements OnInit{
   }
 
   deleteMessage(id: number) {
-    this.messageService.deleteMessage(id).subscribe(() => {
-      // HTTP delete doesn't return anything to the client  
-      this.messages.splice(this.messages.findIndex(m => m.id === id), 1); // delete from the client 
+    this.confirmService.confirm("Confirm delete message", "This can't be undone").subscribe(result => {
+      if (result) {
+        this.messageService.deleteMessage(id).subscribe(() => {
+        // HTTP delete doesn't return anything to the client  
+        this.messages.splice(this.messages.findIndex(m => m.id === id), 1); // delete from the client 
+        })
+      }
     })
+
   }
 
   pageChanged(event: any) {

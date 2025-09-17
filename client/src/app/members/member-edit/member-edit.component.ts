@@ -3,13 +3,15 @@ import { User } from '../../_models/user';
 import { Member } from '../../_models/member';
 import { AccountService } from '../../_service/account.service';
 import { MembersService } from '../../_service/members.service';
-import { take } from 'rxjs';
+import { filter, take } from 'rxjs';
 import { NgIf } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ToastrService } from 'ngx-toastr';
 import { PhotoEditorComponent } from '../../photo-editor/photo-editor.component';
 import { DatePipe } from '@angular/common';
+import { NavigationStart, Router } from '@angular/router';
+import { ConfirmService } from '../../_service/confirm.service';
 
 @Component({
   selector: 'app-member-edit',
@@ -34,7 +36,7 @@ export class MemberEditComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private memberService: MembersService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {
     this.accountService.currentUser$
       .pipe(take(1))

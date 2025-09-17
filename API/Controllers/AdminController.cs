@@ -35,7 +35,7 @@ namespace API.Controllers
         })
         .ToListAsync();
 
-      return Ok(users); 
+      return Ok(await users); 
     }
 
     [HttpPost("edit-roles/{username}")]

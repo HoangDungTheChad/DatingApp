@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace API.DTOs
@@ -19,5 +20,9 @@ namespace API.DTOs
     // Can be null if the message has not been read 
     public DateTime DateSent { get; set; }
     public DateTime? DateRead { get; set; }
+    // we not sending this props to client but still get access to them in our repository  
+    [JsonIgnore]
+    public bool SenderDeleted {get; set;}
+    public bool RecipientDeleted { get; set;}
   }
 }

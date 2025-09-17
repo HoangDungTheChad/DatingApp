@@ -16,52 +16,52 @@ namespace API.Controllers
   [Authorize]
   public class MessagesController : BaseApiController
   {
-    private readonly IUserRepository _userRepository;
-    private readonly IMessageRepository _messageRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public MessagesController(IUserRepository userRepository, IMessageRepository messageRepository,
-      IMapper mapper)
+    public MessagesController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-      _userRepository = userRepository;
-      _messageRepository = messageRepository;
+      _unitOfWork = unitOfWork;
       _mapper = mapper;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<MessageDto>> CreateMessage(CreateMessageDto createMessageDto)
-    {
-      var username = User.GetUserName();
-      if (username == createMessageDto.RecipientUserName.ToLower())
-        return BadRequest("You cannot send messages to yourself");
+    // // Remove this, we got this functionality inside our signalR Hub 
+    // [HttpPost]
+    // public async Task<ActionResult<MessageDto>> CreateMessage(CreateMessageDto createMessageDto)
+    // {
+    //   var username = User.GetUserName();
+    //   if (username == createMessageDto.RecipientUserName.ToLower())
+    //     return BadRequest("You cannot send messages to yourself");
 
-      var sender = await _userRepository.GetUserByUsernameAsync(username);
-      var recipient = await _userRepository.GetUserByUsernameAsync(createMessageDto.RecipientUserName);
+    //   var sender = await _userRepository.GetUserByUsernameAsync(username);
+    //   var recipient = await _userRepository.GetUserByUsernameAsync(createMessageDto.RecipientUserName);
 
-      if (recipient == null) return NotFound();
+    //   if (recipient == null) return NotFound();
 
-      var message = new Message()
-      {
-        Sender = sender,
-        SenderUsername = sender.UserName,
-        Recipient = recipient,
-        RecipientUsername = recipient.UserName,
-        Content = createMessageDto.Content
-      };
+    //   var message = new Message()
+    //   {
+    //     Sender = sender,
+    //     SenderUsername = sender.UserName,
+    //     Recipient = recipient,
+    //     RecipientUsername = recipient.UserName,
+    //     Content = createMessageDto.Content
+    //   };
 
-      _messageRepository.AddMessage(message);
+    //   _unitOfWork.MessageRepository.AddMessage(message);
 
-      if (await _messageRepository.SaveAllAsync()) return Ok(_mapper.Map<MessageDto>(message));
+    //   if (await _unitOfWork.MessageRepository.SaveAllAsync()) return Ok(_mapper.Map<MessageDto>(message));
 
-      return BadRequest("Failed to send message");
-    }
+    //   return BadRequest("Failed to send message");
+    // }
+
+    //---------------------------------------------
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUsers([FromQuery] MessageParams messageParams)
     {
       messageParams.Username = User.GetUserName();
 
-      var messages = await _messageRepository.GetMessagesForUser(messageParams);
+      var messages = await _unitOfWork.MessageRepository.GetMessagesForUser(messageParams);
 
       Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize,
          messages.TotalCount, messages.TotalPages);
@@ -69,13 +69,14 @@ namespace API.Controllers
       return messages;
     }
 
+    // Remove this, we got this functionality inside our signalR hub 
     [HttpGet("thread/{username}")]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string username)
     {
       var currentUsername = User.GetUserName();
       var recipientUsername = username;
 
-      return Ok(await _messageRepository.GetMessageThread(currentUsername, recipientUsername));
+      return Ok(await _unitOfWork.MessageRepository.GetMessageThread(currentUsername, recipientUsername));
     }
 
     [HttpDelete("{id}")]
@@ -83,7 +84,7 @@ namespace API.Controllers
     {
       var username = User.GetUserName();
 
-      var message = await _messageRepository.GetMessage(id);
+      var message = await _unitOfWork.MessageRepository.GetMessage(id);
 
       // IMPORTANT: always remember to eagerly load Sender and Recipient 
       if (message.Sender.UserName != username && message.Recipient.UserName != username)
@@ -104,12 +105,12 @@ namespace API.Controllers
 
       if (message.SenderDeleted && message.RecipientDeleted)
       {
-        _messageRepository.DeleteMessage(message);
+        _unitOfWork.MessageRepository.DeleteMessage(message);
       }
 
-      if (await _messageRepository.SaveAllAsync()) return Ok();
+      if (await _unitOfWork.Complete()) return Ok();
 
-      return BadRequest("Problem deleting the message"); 
+      return BadRequest("Problem deleting the message");
     }
   }
 }
