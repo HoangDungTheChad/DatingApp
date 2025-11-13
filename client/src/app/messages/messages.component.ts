@@ -2,17 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { Message } from '../_models/message';
 import { Pagination } from '../_models/pagination';
 import { MessageService } from '../_service/message.service';
-import { DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { RouterLink } from '@angular/router';
 import { PaginationComponent } from 'ngx-bootstrap/pagination';
 import { ConfirmService } from '../_service/confirm.service';
+import { HttpClient } from '@angular/common/http';
+import { PresenceService } from '../_service/presence.service';
 
 @Component({
   standalone: true, 
   selector: 'app-messages',
-  imports: [NgIf, NgFor, FormsModule, ButtonsModule, PaginationComponent,  RouterLink, TitleCasePipe, DatePipe],
+  imports: [NgIf, NgFor, FormsModule, ButtonsModule, PaginationComponent,  RouterLink, TitleCasePipe, DatePipe, AsyncPipe],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css'
 })
@@ -23,11 +25,17 @@ export class MessagesComponent implements OnInit{
   pageNumber: number = 1;  
   pageSize: number = 5; 
   loading: boolean = false;  
+  toggleRefreshBtn: boolean = false; 
 
-  constructor(private messageService: MessageService, private confirmService: ConfirmService) {}
+  constructor(public messageService: MessageService, private confirmService: ConfirmService, private presence: PresenceService) {}
 
   ngOnInit(): void {
-    this.loadMessages(); 
+    this.loadMessages();  
+    this.presence.newMessageArrived$.subscribe({next: senderUsername => {
+      if (senderUsername && ["Unread", "Inbox"].includes(this.container)) {
+        this.toggleRefreshBtn = true; 
+      }
+    }})
   }
 
   loadMessages() {
@@ -36,7 +44,8 @@ export class MessagesComponent implements OnInit{
       next: res => {
         this.messages = res.result;  
         this.pagination = res.pagination; 
-        this.loading = false; 
+        this.loading = false;  
+        this.toggleRefreshBtn = false; 
       }
     })
   }
@@ -45,12 +54,18 @@ export class MessagesComponent implements OnInit{
     this.confirmService.confirm("Confirm delete message", "This can't be undone").subscribe(result => {
       if (result) {
         this.messageService.deleteMessage(id).subscribe(() => {
-        // HTTP delete doesn't return anything to the client  
-        this.messages.splice(this.messages.findIndex(m => m.id === id), 1); // delete from the client 
+          let deletedMessage = this.messages[this.messages.findIndex(m => m.id === id)]; 
+
+          // if the deleted message is unread, update the unread count 
+          if (deletedMessage.dateRead === null) {
+            this.messageService.updateUnreadCount(this.messageService.getCurrentUnreadCount() - 1); 
+          }
+
+          // HTTP delete doesn't return anything to the client  
+          this.messages.splice(this.messages.findIndex(m => m.id === id), 1); // delete from the client 
         })
       }
     })
-
   }
 
   pageChanged(event: any) {
@@ -61,5 +76,12 @@ export class MessagesComponent implements OnInit{
       this.pageNumber = event.page;   
       this.loadMessages(); 
     }
+  }
+
+  updateReadCount(senderUserName) {
+    // user has click to see all unread msg from this sender, update the unread count  
+    this.messageService.getUnreadCountFrom(senderUserName).subscribe({next: res => {
+      this.messageService.updateUnreadCount(this.messageService.getCurrentUnreadCount() - res); 
+    }})
   }
 }

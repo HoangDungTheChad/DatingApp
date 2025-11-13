@@ -11,6 +11,7 @@ import { User } from '../../_models/user';
 import { UserParams } from '../../_models/userParams';
 import { AccountService } from '../../_service/account.service';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { mapMember } from '../../_helpers/utils';
 
 @Component({
   selector: 'app-member-list',
@@ -37,8 +38,7 @@ export class MemberListComponent implements OnInit {
   ];
 
   constructor(
-    private memberService: MembersService,
-    private accountService: AccountService
+    public memberService: MembersService,
   ) {
     
     if (!this.memberService.getUserParams()) {
@@ -59,7 +59,7 @@ export class MemberListComponent implements OnInit {
     this.memberService
       .getMembers(this.userParams)
       .subscribe((response: PaginatedResult<Member[]>) => {
-        this.members = response.result;
+        this.members = response.result.map(mapMember)
         this.pagination = response.pagination;
       });
   }
@@ -67,12 +67,17 @@ export class MemberListComponent implements OnInit {
   resetFilters() {
     this.userParams = this.memberService.resetUserParams(); 
     this.loadMembers();
-  }                         
+  }         
 
   pageChanged(event: any) {
     this.userParams.pageNumber = event.page;
     // Synchronize the userParams inside the service as well  
     this.memberService.setUserParams(this.userParams); 
     this.loadMembers();
+  }
+
+  // checking if a member is already liked, so we can add the heart icon  
+  isLiked(username: string) {
+    return this.memberService.likedUsers.some(m => m.username === username); 
   }
 }

@@ -13,6 +13,7 @@ namespace API.Interfaces
     Task<UserLike> GetUserLike(int sourceUserId, int likedUserId);
     Task<AppUser> GetUserWithLikes(int userId);
     // predicate: Are we looking for a list of users that have been liked or liked by 
-    Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams); 
+    Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams);
+    void RemoveUserLike(UserLike userLike); 
   }
 }

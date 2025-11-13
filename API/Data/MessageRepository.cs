@@ -127,6 +127,29 @@ namespace API.Data
       return messageDtos; 
     }
 
+    public async Task<int> GetUnreadCount(string username)
+    {
+      var count = await _context.Messages
+        .Where(m => m.RecipientUsername == username
+                  && !m.RecipientDeleted
+                  && m.DateRead == null)
+        .CountAsync(); 
+
+      return count; 
+    }
+
+    public async Task<int> GetUnreadCountFrom(string username, string senderUsername)
+    {
+      var count = await _context.Messages
+        .Where(m => m.RecipientUsername == username
+          && !m.RecipientDeleted
+          && m.SenderUsername == senderUsername
+          && m.DateRead == null)
+        .CountAsync(); 
+      
+      return count; 
+    }
+
     public void RemoveConnection(Connection connection)
     {
       _context.Connections.Remove(connection);

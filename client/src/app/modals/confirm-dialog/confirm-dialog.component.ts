@@ -19,13 +19,15 @@ export class ConfirmDialogComponent {
 
   confirm() {
     this.result = true;  
-    console.log("result is set to " + this.result + ", are you happy about that  bro")
     this.bsModalRef.hide(); 
   }
 
   decline() {
     this.result = false;  
-    console.log("result is set to false")
     this.bsModalRef.hide(); 
+  }  
+
+  hardware() {
+    console.log("result")
   }
 }

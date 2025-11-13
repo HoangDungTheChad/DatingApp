@@ -6,7 +6,7 @@
       <div class="card-body">
         <div
           class="mb-2"
-          *ngIf="(presence.onlineUsers$ | async).includes(member.userName)"
+          *ngIf="(presence.onlineUsers$ | async).includes(member.username)"
         >
           <i [class.is-online]="true" class="fa fa-circle text-success me-2"></i>Online now 
         </div>
@@ -55,11 +55,11 @@
       </tab>
       <tab heading="Photo" (selectTab)="onTabActivated($event)">
         <div class="container" style="width: 700px; height: 550px; margin-top: 10px;">
-          <gallery [items]="images" thumbPosition="left"></gallery>
+          <app-member-gallery [images]="images"/>
         </div>
       </tab>
       <tab heading="Messages" (selectTab)="onTabActivated($event)">
-        <app-member-messages [username]="member.userName"></app-member-messages>
+        <app-member-messages [username]="member.username"></app-member-messages>
       </tab>
     </tabset>
   </div>

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-  // make sure we're authenticated to this controller 
+  // make sure we're authenticated to this controller  
   [Authorize]
   public class LikesController : BaseApiController
   {
@@ -23,7 +23,7 @@ namespace API.Controllers
       _unitOfWork = unitOfWork;
     }
 
-    [HttpPost("{username}")]
+    [HttpPost("add-like/{username}")]
     public async Task<ActionResult> AddLike(string username)
     {
       var sourceUserId = User.GetUserId();
@@ -53,7 +53,40 @@ namespace API.Controllers
       return BadRequest("Failed to save user");
     }
 
-    [HttpGet]
+    [HttpDelete("remove-like/{username}")]
+    public async Task<ActionResult> Removelike(string username, string relationshipType)
+    {
+      var sourceUserId = User.GetUserId();
+      var likedUserId = await _unitOfWork.UserRepository.GetUserIdByUsernameAsync(username);
+
+      // Outgoing means you liked them and vice versa  
+      var outgoingLike = await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUserId);
+      var incomingLike = await _unitOfWork.LikesRepository.GetUserLike(likedUserId, sourceUserId);
+
+      switch (relationshipType)
+      {
+        case "likedByMe":
+          if (outgoingLike == null) return BadRequest("You haven't liked this user");
+          _unitOfWork.LikesRepository.RemoveUserLike(outgoingLike);
+          break;
+        case "likedMe":
+          if (incomingLike == null) return BadRequest("This user hasn't liked you");
+          _unitOfWork.LikesRepository.RemoveUserLike(incomingLike);
+
+          // Optional: if both side like each other (a match), remove both  
+          if (outgoingLike != null)
+            _unitOfWork.LikesRepository.RemoveUserLike(outgoingLike);
+          break;
+        default:
+          return BadRequest("Invalid relationship type, it is now " + relationshipType);
+      }
+
+      if (await _unitOfWork.Complete()) return Ok();
+
+      return BadRequest("RemoveLike failed");
+    }
+
+    [HttpGet("likes-pagination")]
     public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
     {
       likesParams.UserId = User.GetUserId();
@@ -62,6 +95,28 @@ namespace API.Controllers
       Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
       return Ok(users);
+    }
+
+    // getting a list of already liked users without the pagination stuff 
+    [HttpGet("liked-users")]
+    public async Task<ActionResult<IEnumerable<LikeDto>>> GetLikedUsers()
+    {
+      var userId = User.GetUserId();
+      var userWithLikes = await _unitOfWork.LikesRepository.GetUserWithLikes(userId); 
+      if (userWithLikes == null) return NotFound("User not found");  
+      
+      var likedUsers = userWithLikes.LikedUsers?.Select(ul => new LikeDto
+      {
+        // ul means UserLike 
+        Username = ul.LikedUser.UserName,
+        KnownAs = ul.LikedUser.KnownAs,
+        Age = ul.LikedUser.DateOfBirth.CalculateAge(),
+        PhotoUrl = ul.LikedUser.Photos.FirstOrDefault(p => p.IsMain).Url,
+        City = ul.LikedUser.City,
+        Id = ul.LikedUser.Id
+      }); 
+
+      return Ok(likedUsers); 
     }
   }
 }

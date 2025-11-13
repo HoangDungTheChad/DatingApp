@@ -4,7 +4,6 @@ import { MembersService } from '../../_service/members.service';
 import { Member } from '../../_models/member';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { TabDirective, TabsetComponent, TabsModule } from 'ngx-bootstrap/tabs';
-import { GalleryModule, GalleryItem, ImageItem } from 'ng-gallery';
 import { DatePipe } from '@angular/common';
 import { TimeagoModule } from 'ngx-timeago';
 import { MemberMessagesComponent } from '../member-messages/member-messages.component';
@@ -13,13 +12,16 @@ import { MessageService } from '../../_service/message.service';
 import { PresenceService } from '../../_service/presence.service';
 import { AccountService } from '../../_service/account.service';
 import { User } from '../../_models/user';
+import { mapMember } from '../../_helpers/utils';
+import { MemberGalleryComponent } from '../member-gallery/member-gallery.component';
+import { ImageItem } from '../../_helpers/image-item';
 
 @Component({
   selector: 'app-member-detail',
   standalone: true,
   imports: [
     TabsModule,
-    GalleryModule,
+    MemberGalleryComponent, 
     DatePipe,
     TimeagoModule,
     MemberMessagesComponent, 
@@ -32,7 +34,7 @@ import { User } from '../../_models/user';
 export class MemberDetailComponent implements OnInit, OnDestroy {
   @ViewChild('memberTabs', {static: true}) memberTabs: TabsetComponent; // this component is provided by ngx-bootstrap
   member: Member;
-  images: GalleryItem[] = [];
+  images: ImageItem[] = [];
   activeTab: TabDirective;
   messages: Message[] = []; 
   user: User; 
@@ -56,7 +58,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     // this.loadMember();
     this.route.data.subscribe({
       next: data => {
-        this.member = data.member 
+        this.member = mapMember(data.member)
       }
     })
     
@@ -72,7 +74,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   getImages() {
     // set items array
     for (let photo of this.member.photos) {
-      this.images.push(new ImageItem({ src: photo.url, thumb: photo.url }));
+      this.images.push(new ImageItem(photo.url, photo.url));
     }
   }
 
@@ -85,13 +87,13 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   //     });
   // }
 
-  loadMessages() {
-    this.messageService.getMessageThread(this.member.userName).subscribe({
-      next: (res) => {
-        this.messages = res;
-      },
-    });
-  }
+  // loadMessages() {
+  //   this.messageService.getMessageThread(this.member.username).subscribe({
+  //     next: (res) => {
+  //       this.messages = res;
+  //     },
+  //   });
+  // }
 
   selectTab(tabId: number) {
     this.memberTabs.tabs[tabId].active = true; 
@@ -101,7 +103,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     this.activeTab = data; // so we have access to information inside that tab
 
     if (this.activeTab.heading == 'Messages' && this.messages.length === 0) {
-      this.messageService.createHubConnection(this.user, this.member.userName); 
+      this.messageService.createHubConnection(this.user, this.member.username); 
     } else {
       this.messageService.stopHubConnection()
     }

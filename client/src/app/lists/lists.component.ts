@@ -7,6 +7,7 @@ import { MemberCardComponent } from '../members/member-card/member-card.componen
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { Pagination } from '../_models/pagination';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { AnySrvRecord } from 'node:dns';
 
 @Component({
   selector: 'app-lists',
@@ -17,8 +18,8 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 })
 export class ListsComponent implements OnInit {
   // Every properties inside member is optional  
-  members: Partial<Member[]>
-  predicate: string = 'liked'; 
+  members: Partial<Member[]> = []; 
+  predicate: string = 'likedByMe'; 
   pageNumber: number = 1;  
   pageSize: number = 5; 
   pagination: Pagination; 
@@ -41,5 +42,9 @@ export class ListsComponent implements OnInit {
   pageChanged(event: any) {
     this.pageNumber = event.page;  
     this.loadLikes(); 
+  }
+
+  handleRemoveAction(data: any) {
+    this.members = this.members.filter(m => m.username != data.username); 
   }
 }

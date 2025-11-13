@@ -17,3 +17,20 @@
 .rounded-circle {
   height: 50px; 
 }
+
+/* styles for message in message thread */
+li.my-message {
+  padding: 10px; 
+  background-color: #ffe0b2;
+  color: #000; 
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0, 120, 255, 0.25);
+}
+
+li.their-message {
+  padding: 10px; 
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0, 120, 255, 0.25);
+}
+

@@ -5,13 +5,20 @@
     <ul class="navbar-nav me-auto mb-2 mb-md-0">
       <ng-container *ngIf="(currentUser$ | async) as user">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/members" routerLinkActive="active">Matches</a>
+          <a class="nav-link" routerLink="/members" routerLinkActive="active">Explore</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/lists" routerLinkActive="active">Lists</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/messages" routerLinkActive="active">Messages</a>
+          <a class="nav-link" routerLink="/messages" routerLinkActive="active">
+            Messages
+            <ng-container *ngIf="(messageService.unreadCount$ | async) as unreadCount">
+              <!-- <span *ngIf="unreadCount > 0" class="badge bg-danger ms-1"> -->
+                (<span >{{ unreadCount }}</span>)
+              <!-- </span> -->
+            </ng-container>
+          </a>
         </li>
         <li *appHasRole="['Admin', 'Moderator']" class="nav-item">
           <a class="nav-link" routerLink="/admin" routerLinkActive="active">Admin</a>

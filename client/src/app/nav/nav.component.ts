@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../_service/account.service';
 import { NgIf } from '@angular/common';
@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TitleCasePipe } from '@angular/common';
 import { MembersService } from '../_service/members.service';
 import { HasRoleDirective } from '../_directives/has-role.directive';
+import { MessageService } from '../_service/message.service';
 
 @Component({
   selector: 'app-nav',
@@ -35,7 +36,8 @@ export class NavComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private router: Router,
-    private memberService: MembersService 
+    private memberService: MembersService, 
+    public messageService: MessageService
   ) {}
 
   ngOnInit(): void {

@@ -7,8 +7,9 @@
     <ul #scrollMe  
       style="overflow-y: scroll; height: 500px; padding-right: 10px;"
       class="chat">
-      <ng-container *ngIf="(messageService.messageThread$ | async).length > 0" >
-        <li *ngFor="let message of (messageService.messageThread$ | async)">
+      <ng-container *ngIf="(messageService.messageThread$ | async).length > 0">
+        <li *ngFor="let message of (messageService.messageThread$ | async)"
+          [ngClass]="{'my-message': message.senderUsername != username, 'their-message': message.senderUsername == username}">
           <div>
             <span class="chat-img float-end">
               <img class="rounded-circle" [src]="message.senderPhotoUrl || 'assets/user.png'" 
@@ -17,7 +18,7 @@
             <div class="chat-body">
               <div class="header">
                 <small class="text-muted">
-                  <span class="fa fa-clock-o">{{message.dateSent | date: 'short'}}</span>
+                  <span class="fa fa-clock-o me-2">&nbsp;&nbsp;{{message.dateSent | date: 'short'}}</span>
                   <span class="text-danger" *ngIf="!message.dateRead 
                     && message.recipientUsername === username">
                     (unread)    
@@ -33,7 +34,6 @@
           </div>
         </li>
       </ng-container>
-
     </ul>
   </div>
 

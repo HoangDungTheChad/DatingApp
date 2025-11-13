@@ -8,6 +8,8 @@ import { User } from './_models/user';
 import { isPlatformBrowser } from '@angular/common';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { PresenceService } from './_service/presence.service';
+import { MessageService } from './_service/message.service';
+import { ThumbnailsPosition } from 'ng-gallery';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +23,11 @@ export class AppComponent implements OnInit {
   title = 'The Dating App';
   userLoaded = false;
 
-  constructor(private accountService: AccountService, private presence: PresenceService) {}
+  constructor(
+    private accountService: AccountService,
+    private presence: PresenceService,   
+    private messageService: MessageService 
+  ) {}
 
   ngOnInit(): void {
     this.setCurrentUser();
@@ -44,6 +50,7 @@ export class AppComponent implements OnInit {
       const user: User = JSON.parse(userString);
       this.accountService.setCurrentUser(user);
       this.presence.createHubConnection(user); // create the hub connnection use is set
+      this.messageService.loadUnreadCount(); 
     }
   }
 }

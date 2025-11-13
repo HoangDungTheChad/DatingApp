@@ -45,3 +45,28 @@
   animation: blink-dot 1.2s ease-in-out infinite;
   color: rgb(1, 189, 42); 
 }
+
+/* heart animation when you like someone */
+.like-badge {
+  position: absolute;
+  bottom: 5px;   /* 🔽 a bit above the edge */
+  right: 8px;    /* 🔜 aligned to the right */
+  font-size: 18px;
+  color: #e74c3c;
+  z-index: 5;
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}

@@ -5,6 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
 import { Router } from '@angular/router';
+import { MessageService } from './message.service';
+import { Message } from '../_models/message';
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +18,12 @@ export class PresenceService {
   // use it for member-card, member-detail, ... 
   private onlineUsersSource = new BehaviorSubject<string[]>([]); 
   public onlineUsers$ = this.onlineUsersSource.asObservable(); 
+  
+  // this is for messages component, subscribe to toggle the refresh mailbox btn 
+  private newMessageArrivedSource = new BehaviorSubject<string | null>(null); 
+  newMessageArrived$ = this.newMessageArrivedSource.asObservable();  
 
-  constructor(private toastr: ToastrService, private router: Router) {}
+  constructor(private toastr: ToastrService, private router: Router, private messageService: MessageService) {}
 
   createHubConnection(user: User) {
     this.hubConnection = new HubConnectionBuilder()
@@ -57,6 +63,10 @@ export class PresenceService {
         .subscribe(() => {
           this.router.navigateByUrl("/members/" + username + "?tab=3"); 
         }); 
+      // update the unread count  
+      this.messageService.updateUnreadCount(this.messageService.getCurrentUnreadCount() + 1); 
+      // subscribe in messages component to toggle refresh mailbox btn  
+      this.newMessageArrivedSource.next(username); 
     }); 
   }
 

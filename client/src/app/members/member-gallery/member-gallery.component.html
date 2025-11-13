@@ -1,0 +1,32 @@
+<div class="gallery">
+  <!-- Thumbnail sidebar -->
+  <div class="thumbnails">
+    <div
+      *ngFor="let img of images; let i = index"
+      class="thumb"
+      [class.active]="i === selectedIndex"
+      (click)="selectImage(i)"
+    >
+      <img [src]="img.thumbnail_url" [alt]="'Thumbnail ' + (i + 1)" />
+    </div>
+  </div>
+
+  <!-- Main display -->
+  <div class="main-display">
+    <!-- floating indicator -->
+    <div class="indicator">{{ selectedIndex + 1 }}/{{ images.length }}</div>
+
+    <!-- stack all images, only active one fades in -->
+    <div
+      class="image-wrapper"
+      *ngFor="let img of images; let i = index"
+      [class.active]="i === selectedIndex"
+    >
+      <img [src]="img.url" [alt]="'Image ' + (i + 1)" />
+    </div>
+
+    <!-- navigation -->
+    <button class="nav prev" (click)="prev()">‹</button>
+    <button class="nav next" (click)="next()">›</button>
+  </div>
+</div>

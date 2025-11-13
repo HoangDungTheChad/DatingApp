@@ -13,7 +13,7 @@ namespace API.Data
 {
   public class LikesRepository : ILikesRepository
   {
-    private readonly DataContext _context; 
+    private readonly DataContext _context;
     public LikesRepository(DataContext context)
     {
       _context = context;
@@ -21,7 +21,7 @@ namespace API.Data
 
     public async Task<UserLike> GetUserLike(int sourceUserId, int likedUserId)
     {
-      return await _context.Likes.FindAsync(sourceUserId, likedUserId); 
+      return await _context.Likes.FindAsync(sourceUserId, likedUserId);
     }
 
     public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams)
@@ -29,13 +29,13 @@ namespace API.Data
       var users = _context.Users.OrderBy(u => u.UserName).AsQueryable();
       var likes = _context.Likes.AsQueryable();
 
-      if (likesParams.Predicate == "liked")
+      if (likesParams.Predicate == "likedByMe")
       {
         likes = likes.Where(like => like.SourceUserId == likesParams.UserId);
         users = likes.Select(like => like.LikedUser);
       }
 
-      if (likesParams.Predicate == "likedBy")
+      if (likesParams.Predicate == "likedMe")
       {
         likes = likes.Where(like => like.LikedUserId == likesParams.UserId);
         users = likes.Select(like => like.SourceUser);
@@ -49,10 +49,10 @@ namespace API.Data
         PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url,
         City = user.City,
         Id = user.Id
-      }); 
-      
+      });
+
       return await PagedList<LikeDto>.CreateAsync(likedUsers,
-        likesParams.PageNumber, likesParams.PageSize); 
+        likesParams.PageNumber, likesParams.PageSize);
     }
 
     public async Task<AppUser> GetUserWithLikes(int userId)
@@ -60,7 +60,14 @@ namespace API.Data
       // getting the user with their collection of likes 
       return await _context.Users
         .Include(x => x.LikedUsers)
-        .FirstOrDefaultAsync(x => x.Id == userId); 
+          .ThenInclude(ul => ul.LikedUser) 
+            .ThenInclude(user => user.Photos)
+        .FirstOrDefaultAsync(x => x.Id == userId);
+    }
+
+    public void RemoveUserLike(UserLike userLike)
+    {
+      _context.Likes.Remove(userLike); 
     }
   }
 }

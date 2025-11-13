@@ -13,6 +13,7 @@ import { preventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
 import { memberDetailedResolver } from './_resolvers/member-detailed.resolver';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
 import { adminGuard } from './_guards/admin.guard';
+import { RenderMode } from '@angular/ssr';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,7 +23,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'members', component: MemberListComponent },
-      { path: 'members/:username', component: MemberDetailComponent, resolve: {member: memberDetailedResolver}}, // member is the key to access the data inside this particular resolver
+      { 
+        path: 'members/:username', 
+        component: MemberDetailComponent, 
+        resolve: {member: memberDetailedResolver}, // member is the key to access the data inside this particular resolver
+      }, 
       { path: 'member/edit', component: MemberEditComponent, canDeactivate: [preventUnsavedChangesGuard] },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
@@ -33,5 +38,5 @@ export const routes: Routes = [
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'errors', component: TestErrorComponent },
   // wildcard route when no other route is matched
-  { path: '**', component: NotFoundComponent, pathMatch: "full"},
+  { path: '**', component: NotFoundComponent, pathMatch: "full"}, 
 ];

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
@@ -79,7 +80,28 @@ namespace API.Controllers
       return Ok(await _unitOfWork.MessageRepository.GetMessageThread(currentUsername, recipientUsername));
     }
 
-    [HttpDelete("{id}")]
+    // Get the total number of unread messages that I have   
+    [HttpGet("unread-count")]
+    public async Task<ActionResult<int>> GetUnreadCount()
+    {
+      var username = User.GetUserName();
+
+      var unreadCount = await _unitOfWork.MessageRepository.GetUnreadCount(username); 
+      
+      return unreadCount; 
+    }
+
+    // Get unread count from a sender  
+    [HttpGet("unread-count-from/{senderUsername}")]
+    public async Task<ActionResult<int>> GetUnreadCountFrom(string senderUsername)
+    {
+      var username = User.GetUserName();
+      var unreadCount = await _unitOfWork.MessageRepository.GetUnreadCountFrom(username, senderUsername); 
+      return unreadCount; 
+    }
+    
+    // make the delete route strictly numeric 
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteMessage(int id)
     {
       var username = User.GetUserName();

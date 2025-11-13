@@ -1,24 +1,53 @@
 <div class="row mb-4" style="width: 40%;">
-  <div class="btn-group" name="container">
-    <button class="btn btn-primary" btnRadio="Unread" [(ngModel)]="container" 
-      (click)="loadMessages()">
-      <i class="fa fa-envelope"></i> Unread 
-    </button>
+  <div class="d-flex align-items-center">
+    
+    <!-- Button Group -->
+    <div class="btn-group me-2"> <!-- added margin-end -->
+      <button class="btn btn-primary position-relative" 
+              btnRadio="Unread" [(ngModel)]="container" 
+              (click)="loadMessages()">
+        <i class="fa fa-envelope"></i> Unread
+        <!-- Badge -->
+        <ng-container *ngIf="(messageService.unreadCount$ | async) as unreadCount">
+          <span *ngIf="unreadCount > 0"
+                class="position-absolute top-0 start-100 translate-middle btn-badge badge rounded-pill bg-danger me-4">
+            {{ unreadCount }} 
+          </span>
+        </ng-container>
+      </button>
 
-    <button class="btn btn-primary" btnRadio="Inbox" [(ngModel)]="container" 
-      (click)="loadMessages()">
-      <i class="fa fa-envelope-open"></i> Inbox
-    </button>
+      <button class="btn btn-primary" btnRadio="Inbox" [(ngModel)]="container" 
+              (click)="loadMessages()">
+        <i class="fa fa-envelope-open"></i> Inbox
+      </button>
 
-    <button class="btn btn-primary" btnRadio="Outbox" [(ngModel)]="container" 
-      (click)="loadMessages()">
-      <i class="fa fa-paper-plane"></i> Outbox
-    </button>
+      <button class="btn btn-primary" btnRadio="Outbox" [(ngModel)]="container" 
+              (click)="loadMessages()">
+        <i class="fa fa-paper-plane"></i> Outbox
+      </button>
+    </div>
+
+    <!-- Refresh Button -->
+<button *ngIf="toggleRefreshBtn"
+        class="btn btn-warning text-white rounded-pill shadow-sm"
+        (click)="loadMessages()">
+  <i class="fa fa-refresh me-1"></i> Refresh
+</button>
   </div>
 </div>
 
+
 <div class="row" *ngIf="messages?.length == 0">
-  <h3>No messages</h3>
+  <div class="text-center mt-5 mb-5">
+  <div style="font-size: 56px; opacity: 0.5;">📫</div>
+  <div class="mt-2 fw-semibold" style="font-size: 1.8rem; color: #ff9800;">
+    Your mailbox is empty
+  </div>
+  <div class="mt-1 text-muted" style="font-size: 1.1rem;">
+    No new messages yet — check back soon 💭
+  </div>
+</div>
+
 </div>
 
 <div class="row mb-4" *ngIf="messages?.length > 0">
@@ -32,7 +61,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr [hidden]="loading" *ngFor="let message of messages"
+      <tr [hidden]="loading" *ngFor="let message of messages" 
+        (click)="updateReadCount(message.senderUsername)" 
         routerLink='{{container === "Outbox" 
           ? "/members/" + message.recipientUsername 
           : "/members/" + message.senderUsername}}'
