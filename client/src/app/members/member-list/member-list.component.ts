@@ -52,6 +52,7 @@ export class MemberListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMembers();
+    this.memberService.getLikedMembers() 
   }
 
   loadMembers() {

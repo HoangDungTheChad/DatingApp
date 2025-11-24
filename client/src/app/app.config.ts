@@ -19,9 +19,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
+    // provideClientHydration(withEventReplay()),
     provideHttpClient(
-      withInterceptors([errorInterceptor, jwtInterceptor, loadingInterceptor])
+      withInterceptors([errorInterceptor, jwtInterceptor, loadingInterceptor]) // adding loadingInterceptor if you want 
       // withFetch() --> this is recommended but it messes with error interceptor, fuck
     ),
     provideAnimations(),

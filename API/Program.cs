@@ -9,9 +9,14 @@ using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser")
+});
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -37,12 +42,24 @@ app.UseCors(x => x.AllowAnyHeader()
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Serve files from wwwroot/browser
+var defaultFilesOptions = new DefaultFilesOptions();
+defaultFilesOptions.DefaultFileNames.Clear();                 // remove "index.html"
+defaultFilesOptions.DefaultFileNames.Add("index.html");   // tell .NET your real file
+
+app.UseDefaultFiles(defaultFilesOptions); 
+
+app.UseStaticFiles(); 
+
 // map your controllers (REST API)
 app.MapControllers();
 
 // map your Signal Hub (real-time endpoints) 
 app.MapHub<PresenceHub>("/hubs/presence");
-app.MapHub<MessageHub>("/hubs/message"); 
+app.MapHub<MessageHub>("/hubs/message");
+
+// Fallback to Angular app for client-side routes
+app.MapFallbackToFile("index.html");  
 
 // ==== SEED DATA HERE ==== // 
 // Create a mini-container to grab scoped services 

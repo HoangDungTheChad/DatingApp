@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private presence: PresenceService,   
-    private messageService: MessageService 
+    private presence: PresenceService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -44,13 +44,13 @@ export class AppComponent implements OnInit {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const userString = localStorage.getItem('user');
-    if (!userString) {
+    if (!userString || userString === 'null' || userString.trim() === '') {
       this.accountService.setCurrentUser(null);
     } else {
       const user: User = JSON.parse(userString);
       this.accountService.setCurrentUser(user);
       this.presence.createHubConnection(user); // create the hub connnection use is set
-      this.messageService.loadUnreadCount(); 
+      this.messageService.loadUnreadCount();
     }
   }
 }

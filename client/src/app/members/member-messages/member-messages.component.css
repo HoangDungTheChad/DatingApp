@@ -21,6 +21,7 @@
 /* styles for message in message thread */
 li.my-message {
   padding: 10px; 
+  padding-left: 20px; 
   background-color: #ffe0b2;
   color: #000; 
   border-radius: 14px;

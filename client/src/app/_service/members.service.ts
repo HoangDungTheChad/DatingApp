@@ -17,9 +17,9 @@ export class MembersService {
   baseUrl = environment.apiUrl;
   isBrowser: boolean = false;
   members: Member[] = [];
-  memberCache: Map<any, any> = new Map(); 
-  // keeping track of all member that likeds me     
-  likedUsers: Member[] = [];  
+  memberCache: Map<any, any> = new Map();
+  // keeping track of all member that likeds me
+  likedUsers: Member[] = [];
 
   user: User;
   userParams: UserParams;
@@ -27,13 +27,7 @@ export class MembersService {
   constructor(
     private http: HttpClient,
     private accountService: AccountService
-  ) {
-    this.http.get<Member[]>(this.baseUrl + 'likes/liked-users').subscribe({
-      next: res => {
-        this.likedUsers = res; 
-      }
-    })
-  }
+  ) {}
 
   initializeUserParams() {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
@@ -79,7 +73,7 @@ export class MembersService {
 
     return getPaginatedResult<Member[]>(
       this.baseUrl + 'users',
-      params,  
+      params,
       this.http
     ).pipe(
       map((response) => {
@@ -87,6 +81,15 @@ export class MembersService {
         return response;
       })
     );
+  }
+
+  // MemberListComponent need this infomation 
+  getLikedMembers() {
+    this.http.get<Member[]>(this.baseUrl + 'likes/liked-users').subscribe({
+      next: (res) => {
+        this.likedUsers = res;
+      },
+    });
   }
 
   getMember(username: string): Observable<Member> {
@@ -123,16 +126,18 @@ export class MembersService {
   }
 
   getLikes(predicate, pageNumber, pageSize) {
-    let params = getPaginationParams(pageNumber, pageSize);  
-    params = params.append("predicate", predicate);  
-    return getPaginatedResult<Member[]>(this.baseUrl + 'likes/likes-pagination', params, this.http); 
+    let params = getPaginationParams(pageNumber, pageSize);
+    params = params.append('predicate', predicate);
+    return getPaginatedResult<Member[]>(
+      this.baseUrl + 'likes/likes-pagination',
+      params,
+      this.http
+    );
   }
 
   removeLike(username, relType) {
-    return this.http.delete(this.baseUrl + 'likes/remove-like/' + username, 
-      {
-        params: {relationshipType: relType}
-      }
-    ); 
+    return this.http.delete(this.baseUrl + 'likes/remove-like/' + username, {
+      params: { relationshipType: relType },
+    });
   }
 }
