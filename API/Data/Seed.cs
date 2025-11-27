@@ -40,6 +40,12 @@ namespace API.Data
         // using var hmac = new HMACSHA512();
         // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password"));
         // user.PasswordSalt = hmac.Key;
+
+        // --- FIX: ensure all DateTimes are UTC ---
+        user.DateOfBirth = DateTime.SpecifyKind(user.DateOfBirth, DateTimeKind.Utc);
+        user.Created = DateTime.SpecifyKind(user.Created, DateTimeKind.Utc);
+        user.LastActive = DateTime.SpecifyKind(user.LastActive, DateTimeKind.Utc);
+
         var result = await userManager.CreateAsync(user, "password");
         if (!result.Succeeded)
         {
@@ -56,14 +62,14 @@ namespace API.Data
         await userManager.AddToRoleAsync(user, "Member");
       }
 
-      // Create admin  
+      // Create admin
       var admin = new AppUser
       {
-        UserName = "admin"
+        UserName = "admin",
       };
 
       await userManager.CreateAsync(admin, "password");
-      await userManager.AddToRolesAsync(admin, ["admin", "Moderator"]); 
+      await userManager.AddToRolesAsync(admin, ["admin", "Moderator"]);
 
       // await context.SaveChangesAsync(); --> the userManager takes care of saving the changes 
     }

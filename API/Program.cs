@@ -14,8 +14,8 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
-    Args = args,
-    WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser")
+  Args = args,
+  WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser")
 });
 
 // Add services to the container.
@@ -34,7 +34,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors(x => x.AllowAnyHeader()
-  .AllowAnyMethod() 
+  .AllowAnyMethod()
   .AllowCredentials() // Not sure if this is neccessary for the SignalR authentication 
   .WithOrigins("https://localhost:4200"));
 
@@ -47,9 +47,9 @@ var defaultFilesOptions = new DefaultFilesOptions();
 defaultFilesOptions.DefaultFileNames.Clear();                 // remove "index.html"
 defaultFilesOptions.DefaultFileNames.Add("index.html");   // tell .NET your real file
 
-app.UseDefaultFiles(defaultFilesOptions); 
+app.UseDefaultFiles(defaultFilesOptions);
 
-app.UseStaticFiles(); 
+app.UseStaticFiles();
 
 // map your controllers (REST API)
 app.MapControllers();
@@ -59,7 +59,7 @@ app.MapHub<PresenceHub>("/hubs/presence");
 app.MapHub<MessageHub>("/hubs/message");
 
 // Fallback to Angular app for client-side routes
-app.MapFallbackToFile("index.html");  
+app.MapFallbackToFile("index.html");
 
 // ==== SEED DATA HERE ==== // 
 // Create a mini-container to grab scoped services 
@@ -71,6 +71,9 @@ try
   var context = services.GetRequiredService<DataContext>();
   var userManager = services.GetRequiredService<UserManager<AppUser>>();
   var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
+
+
   await context.Database.MigrateAsync();
 
   // Console.WriteLine("WAITING FOR DEBUGGER TO ATTACH...");

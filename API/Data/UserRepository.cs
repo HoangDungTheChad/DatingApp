@@ -37,8 +37,10 @@ namespace API.Data
       query = query.Where(u => u.UserName != userParams.CurrentUsername);
       query = query.Where(u => u.Gender == userParams.Gender);
 
-      var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1); 
-      var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+      // Because PostgresSQl only accept UTC datetime values so...  
+      var today = DateTime.UtcNow.Date; 
+      var minDob = today.AddYears(-userParams.MaxAge - 1); 
+      var maxDob = today.AddYears(-userParams.MinAge);
 
       query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob); 
 

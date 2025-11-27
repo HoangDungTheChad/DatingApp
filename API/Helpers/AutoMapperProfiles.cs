@@ -20,16 +20,27 @@ namespace API.Helpers
           src.DateOfBirth.CalculateAge()));
       CreateMap<Photo, PhotoDto>();
       CreateMap<MemberUpdateDto, AppUser>();
-      CreateMap<RegisterDto, AppUser>();
+
+      // Also make sure DateOfBirth is set to UTC for postgres reason 
+      CreateMap<RegisterDto, AppUser>()
+          .ForMember(dest => dest.DateOfBirth,
+              opt => opt.MapFrom(src => ParseToUtc(src.DateOfBirth))); 
+
       CreateMap<Message, MessageDto>()
         .ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src =>
           src.Sender.Photos.FirstOrDefault(x => x.IsMain).Url))
         .ForMember(dest => dest.RecipientPhotoUrl, opt => opt.MapFrom(
           src => src.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url));
-      CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+    }
 
-      // becareful this one is use to convert message date to UTC 
-      CreateMap<DateTime?, DateTime?>().ConvertUsing(d => d.HasValue ? DateTime.SpecifyKind(d.Value, DateTimeKind.Utc) : null);
+    public static DateTime ParseToUtc(string dob)
+    {
+      var parsed = DateTime.Parse(dob);  
+      
+      if (parsed.Kind != DateTimeKind.Utc) 
+        return DateTime.SpecifyKind(parsed, DateTimeKind.Utc);  
+
+      return parsed.ToUniversalTime(); 
     }
   }
 }
