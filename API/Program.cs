@@ -18,6 +18,10 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
   WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser")
 });
 
+// Read PORT from environment variable (Docker will provide this)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddApplicationServices(builder.Configuration);
@@ -54,7 +58,7 @@ app.UseStaticFiles();
 // map your controllers (REST API)
 app.MapControllers();
 
-// map your Signal Hub (real-time endpoints) 
+// map your Signal Hub (real-time endpoints)
 app.MapHub<PresenceHub>("/hubs/presence");
 app.MapHub<MessageHub>("/hubs/message");
 
