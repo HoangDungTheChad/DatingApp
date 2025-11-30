@@ -7,6 +7,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
 import { Group } from '../_models/group';
+import { BusyService } from './busy.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +23,10 @@ export class MessageService {
   private unreadCountSource = new BehaviorSubject<number>(0);
   unreadCount$ = this.unreadCountSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private busyService: BusyService) {}
 
   createHubConnection(user: User, otherUsername: string) {
+    this.busyService.busy(); // show the loading icon for messages retrieve
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
         accessTokenFactory: () => user.token,
@@ -32,9 +34,9 @@ export class MessageService {
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.start().catch((error) => {
-      console.log(error);
-    });
+    this.hubConnection.start()
+    .catch(error => console.log(error)) 
+    .finally(() => this.busyService.idle()); // whether the connection fails or succeeds, we want to turn off the loading indicator 
 
     this.hubConnection.on('ReceiveMessageThread', (messages) => {
       this.messageThreadSource.next(messages);
@@ -64,6 +66,8 @@ export class MessageService {
 
   stopHubConnection() {
     if (this.hubConnection) {
+       // clear the old thread so it won't be accidentally displayed later when MemberMessages component is created 
+      this.messageThreadSource.next([]); 
       this.hubConnection.stop();
     }
   }
@@ -103,7 +107,7 @@ export class MessageService {
   }
 
   // calling this func inside constructor will cause Circular DI injection error in account service
-  //, call it later inside AccountService.login() 
+  //, call it later inside AccountService.login()
   loadUnreadCount() {
     this.http.get<number>(this.baseUrl + 'messages/unread-count').subscribe({
       next: (res) => {
@@ -117,7 +121,9 @@ export class MessageService {
   }
 
   getUnreadCountFrom(senderUsername: string) {
-    return this.http.get<number>(this.baseUrl + "messages/unread-count-from/" + senderUsername); 
+    return this.http.get<number>(
+      this.baseUrl + 'messages/unread-count-from/' + senderUsername
+    );
   }
 
   updateUnreadCount(newValue: number) {

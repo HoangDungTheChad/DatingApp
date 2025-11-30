@@ -28,6 +28,7 @@ export class MemberMessagesComponent implements OnInit {
   @Input() username: string;
   @Input() messages: Message[];
   messageContent: string;
+  loading = false 
 
   constructor(public messageService: MessageService) {
     this.messageService.messageThread$.subscribe({
@@ -47,11 +48,13 @@ export class MemberMessagesComponent implements OnInit {
   // }
 
   sendMessage() {
+    this.loading = true // display a loading indicator when user send a new message 
     this.messageService
       .sendMessage(this.username, this.messageContent)
       .then(() => {
         this.messageForm.reset();
-      });
+      }) 
+      .finally(() => this.loading = false);
   }
 
   private scrollToBottom() {
