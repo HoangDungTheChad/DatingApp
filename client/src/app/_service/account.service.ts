@@ -11,6 +11,7 @@ import { MessageService } from './message.service';
 })
 export class AccountService {
   baseUrl = environment.apiUrl;
+  // why use type Observable to retrieve user though? Because later in html template we'll take advantage of async pipe 
   private currentUserSource = new ReplaySubject<User | null>(1);
   currentUser$ = this.currentUserSource.asObservable();
 

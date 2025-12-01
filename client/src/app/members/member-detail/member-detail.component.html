@@ -45,17 +45,46 @@
     <tabset class="member-tabset" #memberTabs>
       <tab heading="About {{member.knownAs}}" (selectTab)="onTabActivated($event)">
         <h4>Description</h4>
-        <p>{{member.introduction}}</p>
+        @if (!member.introduction) {
+          <p style="color: #666;">
+            <span style="font-size: 20px; margin-right: 6px;">ℹ️</span>
+            This user hasn't updated this information
+          </p>
+        } @else {
+          <p>{{ member.introduction }}</p>
+        }
+
         <h4>Looking for</h4>
-        <p>{{member.lookingFor}}</p>
+        @if (!member.lookingFor) {
+          <p style="color: #666;">
+            <span style="font-size: 20px; margin-right: 6px;">ℹ️</span>
+            This user hasn't updated this information
+          </p>
+        } @else {
+          <p>{{ member.lookingFor }}</p>
+        }
       </tab>
       <tab heading="Interests" (selectTab)="onTabActivated($event)">
         <h4>Interests</h4>
-        <p>{{member.interests}}</p>
+        @if (!member.interests) {
+          <p style="color: #666;">
+            <span style="font-size: 20px; margin-right: 6px;">ℹ️</span>
+            This user hasn't updated this information
+          </p>
+        } @else {
+          <p>{{ member.interests }}</p>
+        }
       </tab>
       <tab heading="Photo" (selectTab)="onTabActivated($event)">
         <div class="container" style="width: 700px; height: 550px; margin-top: 10px;">
-          <app-member-gallery [images]="images"/>
+          @if (images.length > 0) {
+            <app-member-gallery [images]="images"/>
+          } @else {
+              <div style="padding-top: 40px; text-align: center; color: #666;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📷</div>
+                <p>This user hasn't uploaded any photos yet.</p>
+              </div>
+          }
         </div>
       </tab>
       <tab heading="Messages" (selectTab)="onTabActivated($event)">
