@@ -1,11 +1,20 @@
 <div class="container mt-5">
   <div *ngIf="!registerMode" style="text-align: center;">
-      <h1>Find your match</h1>
-      <p class="lead">Come on in to view your matches, all you need to do is sign up!</p>
-      <div class="class-center">
-        <button (click)="toggleRegisterMode()" class="btn btn-primary btn-lg me-2">Register</button>
-        <button class="btn btn-info btn-lg">Learn more</button>
-      </div>
+      @if(accountService.currentUser$ | async; as user) {
+        <h1>Welcome to the best Dating App, {{user.knownAs}}</h1>
+        <p class="lead">... A special place to meet your future soulmate❤️</p>
+        <div class="class-center">
+          <a class="btn btn-primary btn-lg me-2" routerLink="/members">Explore</a>
+          <button class="btn btn-info btn-lg" routerLink="/about">Learn more</button>
+        </div>
+      } @else {
+        <h1>Find your match</h1>
+        <p class="lead">Come on in to view your matches, all you need to do is sign up!</p>
+        <div class="class-center">
+          <button (click)="toggleRegisterMode()" class="btn btn-primary btn-lg me-2">Register</button>
+          <button class="btn btn-info btn-lg" routerLink="about">Learn more</button>
+        </div>
+      }
   </div>
 
   <div *ngIf="registerMode" class="container">

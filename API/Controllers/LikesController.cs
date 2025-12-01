@@ -109,11 +109,11 @@ namespace API.Controllers
       {
         // ul means UserLike 
         Username = ul.LikedUser.UserName,
-        KnownAs = ul.LikedUser.KnownAs,
-        Age = ul.LikedUser.DateOfBirth.CalculateAge(),
-        PhotoUrl = ul.LikedUser.Photos.FirstOrDefault(p => p.IsMain).Url,
-        City = ul.LikedUser.City,
-        Id = ul.LikedUser.Id
+        // KnownAs = ul.LikedUser.KnownAs,
+        // Age = ul.LikedUser.DateOfBirth.CalculateAge(),
+        // PhotoUrl = ul.LikedUser.Photos.FirstOrDefault(p => p.IsMain).Url,
+        // City = ul.LikedUser.City,
+        // Id = ul.LikedUser.Id
       }); 
 
       return Ok(likedUsers); 

@@ -18,7 +18,7 @@ export class MembersService {
   isBrowser: boolean = false;
   members: Member[] = [];
   memberCache: Map<any, any> = new Map();
-  // keeping track of all member that likeds me
+  // keeping track of all member that I already liked 
   likedUsers: Member[] = [];
 
   user: User;
@@ -87,6 +87,7 @@ export class MembersService {
   getLikedMembers() {
     this.http.get<Member[]>(this.baseUrl + 'likes/liked-users').subscribe({
       next: (res) => {
+        // A list of likeDto with only username as property 
         this.likedUsers = res;
       },
     });

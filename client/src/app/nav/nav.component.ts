@@ -54,7 +54,7 @@ export class NavComponent implements OnInit {
       next: (res) => {
         // reset the filter
         this.memberService.initializeUserParams();
-        this.router.navigateByUrl('/members');
+        this.router.navigateByUrl('/');
       },
     });
   }

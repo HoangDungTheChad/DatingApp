@@ -15,14 +15,14 @@ import { EventEmitter } from '@angular/core';
   styleUrl: './member-card.component.css',
 })
 export class MemberCardComponent implements OnInit {
-  @Input() member: Member;
+  @Input() member: Member; 
   @Input() type: string | null = null; 
   // if this is an unlike card (type = 'unlike'), then relType must be set to 'likeByMe' or 'LikedMe'   
   @Input() relType: string = null;  
 
   @Output() removeAction = new EventEmitter<Object>();  
 
-  @Input() liked: boolean = false; 
+  @Input() liked: boolean = false; // we specify this value at its parent component 
 
   constructor(
     private memberService: MembersService,
@@ -37,7 +37,7 @@ export class MemberCardComponent implements OnInit {
       this.toastr.success('You have liked ' + this.member.knownAs);
       this.liked = true  
       // update the liked user list in the service   
-      this.memberService.likedUsers.push(this.member)
+      this.memberService.likedUsers.push({username} as Member)
     });
   }
 
