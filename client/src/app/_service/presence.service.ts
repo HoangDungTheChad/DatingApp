@@ -1,6 +1,6 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
