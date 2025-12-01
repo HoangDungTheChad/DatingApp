@@ -45,7 +45,7 @@ app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyHeader()
   .AllowAnyMethod()
   .AllowCredentials() // Not sure if this is neccessary for the SignalR authentication 
-  .WithOrigins("https://localhost:4200"));
+  .WithOrigins("https://localhost:4200", "https://datingappbydungthientai.onrender.com"));
 
 // the order of these middleware is important 
 app.UseAuthentication();
