@@ -8,15 +8,14 @@ export const authGuard: CanActivateFn = (route, state) => {
   const accountService = inject(AccountService); 
   const toastr = inject(ToastrService); 
   const router = inject(Router)
-  // for development purpose 
-  return true; 
+  console.log("This is auth guard")
 
   return accountService.currentUser$.pipe(
+    take(1), 
     map(user => {
       if(user) return true;  
-      // toastr.error("you shall not pass bro")
-      console.error("You're not authorized to access this protected resource")
-      // router.navigate(['/']); 
+      toastr.error("You're not authorized to access this protected resource")
+      router.navigate(['/']); 
       return false; 
     })
   ); 

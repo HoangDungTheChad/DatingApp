@@ -20,9 +20,8 @@ export const routes: Routes = [
   {
     path: '',
     runGuardsAndResolvers: 'always',
-    canActivate: [authGuard],
+    canActivate: [authGuard], // prevent unauthorized access 
     children: [
-      { path: 'about', component: AboutComponent}, 
       { path: 'members', component: MemberListComponent },
       { 
         path: 'members/:username', 
@@ -35,6 +34,7 @@ export const routes: Routes = [
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard] },
     ],
   },
+  { path: 'about', component: AboutComponent}, 
   { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'errors', component: TestErrorComponent },
