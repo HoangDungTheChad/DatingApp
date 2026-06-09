@@ -6,3 +6,10 @@ export interface User {
   gender: string; 
   roles: string[]; 
 }
+
+
+export interface user {
+  username: string;  
+  token: string;  
+  photoUrl: string; 
+}
